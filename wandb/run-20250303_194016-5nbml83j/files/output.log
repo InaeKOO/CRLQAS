@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_2q_median.py", line 313, in <module>
+    train(agent, environment, conf['general']['episodes'], args.seed,
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_2q_median.py", line 214, in train
+    one_episode(e, env, agent, episodes)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_2q_median.py", line 145, in one_episode
+    next_state, reward, done = env.step(agent.translate[action])
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/environment/environment_tc_2q_median.py", line 224, in step
+    x0 = self.adam_spsa_v2(angles)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/environment/environment_tc_2q_median.py", line 424, in adam_spsa_v2
+    res = vc_h.min_spsa_v2(ener_fn, x0, maxfev = self.maxfev, **self.options)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/environment/VQE_files/VQE_helper.py", line 284, in min_spsa_v2
+    ck = spsa_grad_dec_new(epoch, c, gamma)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_2q_median.py", line 313, in <module>
+    train(agent, environment, conf['general']['episodes'], args.seed,
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_2q_median.py", line 214, in train
+    one_episode(e, env, agent, episodes)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_2q_median.py", line 145, in one_episode
+    next_state, reward, done = env.step(agent.translate[action])
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/environment/environment_tc_2q_median.py", line 224, in step
+    x0 = self.adam_spsa_v2(angles)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/environment/environment_tc_2q_median.py", line 424, in adam_spsa_v2
+    res = vc_h.min_spsa_v2(ener_fn, x0, maxfev = self.maxfev, **self.options)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/environment/VQE_files/VQE_helper.py", line 284, in min_spsa_v2
+    ck = spsa_grad_dec_new(epoch, c, gamma)
+KeyboardInterrupt

@@ -1,0 +1,15 @@
+{"time":"2025-03-03T19:45:22.351896046+09:00","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/wandb/run-20250303_194522-s5d881tf/logs/debug-core.log"}
+{"time":"2025-03-03T19:45:22.591493054+09:00","level":"INFO","msg":"created new stream","id":"s5d881tf"}
+{"time":"2025-03-03T19:45:22.591669354+09:00","level":"INFO","msg":"stream: started","id":"s5d881tf"}
+{"time":"2025-03-03T19:45:22.591702254+09:00","level":"INFO","msg":"writer: Do: started","stream_id":"s5d881tf"}
+{"time":"2025-03-03T19:45:22.591722254+09:00","level":"INFO","msg":"handler: started","stream_id":"s5d881tf"}
+{"time":"2025-03-03T19:45:22.591730154+09:00","level":"INFO","msg":"sender: started","stream_id":"s5d881tf"}
+{"time":"2025-03-03T19:45:22.921431163+09:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-03T19:45:25.585490843+09:00","level":"INFO","msg":"stream: closing","id":"s5d881tf"}
+{"time":"2025-03-03T19:45:25.585555043+09:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-03-03T19:45:25.586485743+09:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-03-03T19:45:26.434298368+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-03-03T19:45:26.734625077+09:00","level":"INFO","msg":"handler: closed","stream_id":"s5d881tf"}
+{"time":"2025-03-03T19:45:26.734715177+09:00","level":"INFO","msg":"writer: Close: closed","stream_id":"s5d881tf"}
+{"time":"2025-03-03T19:45:26.734786477+09:00","level":"INFO","msg":"sender: closed","stream_id":"s5d881tf"}
+{"time":"2025-03-03T19:45:26.735676477+09:00","level":"INFO","msg":"stream: closed","id":"s5d881tf"}

@@ -1,0 +1,45 @@
+{
+  "os":  "Linux-5.15.146.1-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+  "python":  "CPython 3.10.8",
+  "startedAt":  "2025-03-03T10:57:53.500169Z",
+  "args":  [
+    "--seed",
+    "123",
+    "--config",
+    "lbmt_adam1_H22q0p7414_1e3_ibmq_mumbai_median",
+    "--experiment_name",
+    "finalize/"
+  ],
+  "program":  "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_2q_median.py",
+  "codePath":  "main_2q_median.py",
+  "email":  "ihkoo711@snu.ac.kr",
+  "root":  "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy",
+  "host":  "DESKTOP-INAE",
+  "executable":  "/home/inae/miniconda3/envs/CRLQAS/bin/python",
+  "codePathLocal":  "main_2q_median.py",
+  "cpu_count":  6,
+  "cpu_count_logical":  12,
+  "gpu":  "NVIDIA GeForce RTX 4090",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "1081101176832",
+      "used":  "24043421696"
+    }
+  },
+  "memory":  {
+    "total":  "8285052928"
+  },
+  "cpu":  {
+    "count":  6,
+    "countLogical":  12
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 4090",
+      "memoryTotal":  "25757220864",
+      "architecture":  "Ada"
+    }
+  ],
+  "cudaVersion":  "12.8"
+}

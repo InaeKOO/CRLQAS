@@ -1,0 +1,15 @@
+{"time":"2025-03-04T21:14:43.364769429+09:00","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/wandb/run-20250304_211443-wp7i606r/logs/debug-core.log"}
+{"time":"2025-03-04T21:14:43.822772453+09:00","level":"INFO","msg":"created new stream","id":"wp7i606r"}
+{"time":"2025-03-04T21:14:43.822954153+09:00","level":"INFO","msg":"stream: started","id":"wp7i606r"}
+{"time":"2025-03-04T21:14:43.822983453+09:00","level":"INFO","msg":"writer: Do: started","stream_id":"wp7i606r"}
+{"time":"2025-03-04T21:14:43.823376053+09:00","level":"INFO","msg":"sender: started","stream_id":"wp7i606r"}
+{"time":"2025-03-04T21:14:43.823017553+09:00","level":"INFO","msg":"handler: started","stream_id":"wp7i606r"}
+{"time":"2025-03-04T21:14:44.133385579+09:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-04T21:14:45.112890258+09:00","level":"INFO","msg":"stream: closing","id":"wp7i606r"}
+{"time":"2025-03-04T21:14:45.113412358+09:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-03-04T21:14:45.114163658+09:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-03-04T21:14:45.87475862+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-03-04T21:14:46.11735244+09:00","level":"INFO","msg":"handler: closed","stream_id":"wp7i606r"}
+{"time":"2025-03-04T21:14:46.11736884+09:00","level":"INFO","msg":"writer: Close: closed","stream_id":"wp7i606r"}
+{"time":"2025-03-04T21:14:46.11738544+09:00","level":"INFO","msg":"sender: closed","stream_id":"wp7i606r"}
+{"time":"2025-03-04T21:14:46.11817034+09:00","level":"INFO","msg":"stream: closed","id":"wp7i606r"}

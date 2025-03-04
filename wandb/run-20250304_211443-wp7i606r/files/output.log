@@ -1,0 +1,52 @@
+Traceback (most recent call last):
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_2q_median.py", line 291, in <module>
+    agent = agents.__dict__[conf['agent']['agent_type']].__dict__[conf['agent']['agent_class']](conf,
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/agents/DeepQNstep.py", line 19, in __init__
+    super(DQN_Nstep, self).__init__(conf, action_size, state_size, device)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/agents/DeepQ.py", line 65, in __init__
+    self.optim = torch.optim.Adam(self.policy_net.parameters(), lr=learning_rate)
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/optim/adam.py", line 45, in __init__
+    super().__init__(params, defaults)
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/optim/optimizer.py", line 278, in __init__
+    self.add_param_group(cast(dict, param_group))
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/_compile.py", line 22, in inner
+    import torch._dynamo
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/_dynamo/__init__.py", line 2, in <module>
+    from . import allowed_functions, convert_frame, eval_frame, resume_execution
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/_dynamo/allowed_functions.py", line 30, in <module>
+    from .utils import hashable, is_safe_constant, NP_SUPPORTED_MODULES
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/_dynamo/utils.py", line 89, in <module>
+    import torch.fx.experimental.symbolic_shapes
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 879, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1012, in get_code
+  File "<frozen importlib._bootstrap_external>", line 673, in _compile_bytecode
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_2q_median.py", line 291, in <module>
+    agent = agents.__dict__[conf['agent']['agent_type']].__dict__[conf['agent']['agent_class']](conf,
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/agents/DeepQNstep.py", line 19, in __init__
+    super(DQN_Nstep, self).__init__(conf, action_size, state_size, device)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/agents/DeepQ.py", line 65, in __init__
+    self.optim = torch.optim.Adam(self.policy_net.parameters(), lr=learning_rate)
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/optim/adam.py", line 45, in __init__
+    super().__init__(params, defaults)
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/optim/optimizer.py", line 278, in __init__
+    self.add_param_group(cast(dict, param_group))
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/_compile.py", line 22, in inner
+    import torch._dynamo
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/_dynamo/__init__.py", line 2, in <module>
+    from . import allowed_functions, convert_frame, eval_frame, resume_execution
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/_dynamo/allowed_functions.py", line 30, in <module>
+    from .utils import hashable, is_safe_constant, NP_SUPPORTED_MODULES
+  File "/home/inae/.local/lib/python3.10/site-packages/torch/_dynamo/utils.py", line 89, in <module>
+    import torch.fx.experimental.symbolic_shapes
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 879, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1012, in get_code
+  File "<frozen importlib._bootstrap_external>", line 673, in _compile_bytecode
+KeyboardInterrupt
