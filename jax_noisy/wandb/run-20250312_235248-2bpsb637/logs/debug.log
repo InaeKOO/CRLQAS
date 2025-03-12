@@ -1,0 +1,25 @@
+2025-03-12 23:52:48,750 INFO    MainThread:12429 [wandb_setup.py:_flush():79] Current SDK version is 0.18.7
+2025-03-12 23:52:48,751 INFO    MainThread:12429 [wandb_setup.py:_flush():79] Configure stats pid to 12429
+2025-03-12 23:52:48,751 INFO    MainThread:12429 [wandb_setup.py:_flush():79] Loading settings from /home/inae/.config/wandb/settings
+2025-03-12 23:52:48,751 INFO    MainThread:12429 [wandb_setup.py:_flush():79] Loading settings from /mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/wandb/settings
+2025-03-12 23:52:48,751 INFO    MainThread:12429 [wandb_setup.py:_flush():79] Loading settings from environment variables: {'disabled': 'False'}
+2025-03-12 23:52:48,751 INFO    MainThread:12429 [wandb_setup.py:_flush():79] Inferring run settings from compute environment: {'program_relpath': 'jax_noisy/main_qas.py', 'program_abspath': '/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_qas.py', 'program': '/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/main_qas.py'}
+2025-03-12 23:52:48,752 INFO    MainThread:12429 [wandb_setup.py:_flush():79] Applying login settings: {}
+2025-03-12 23:52:48,752 INFO    MainThread:12429 [wandb_setup.py:_flush():79] Applying login settings: {}
+2025-03-12 23:52:48,752 INFO    MainThread:12429 [wandb_init.py:_log_setup():533] Logging user logs to /mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/wandb/run-20250312_235248-2bpsb637/logs/debug.log
+2025-03-12 23:52:48,753 INFO    MainThread:12429 [wandb_init.py:_log_setup():534] Logging internal logs to /mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/wandb/run-20250312_235248-2bpsb637/logs/debug-internal.log
+2025-03-12 23:52:48,753 INFO    MainThread:12429 [wandb_init.py:init():619] calling init triggers
+2025-03-12 23:52:48,753 INFO    MainThread:12429 [wandb_init.py:init():626] wandb.init called with sweep_config: {}
+config: {'general': {'episodes': 15000}, 'env': {'num_qubits': 4, 'num_layers': 40, 'err_mitig': 0.0, 'rand_halt': 1.0, 'n_shots': 0.0, 'noise_models': '[depolarizing, two_depolarizing]', 'noise_values': [0.000522, 0.0125], 'fake_min_energy': -1.99009719, 'fn_type': 'incremental_with_fixed_ends', 'accept_err': 1.0160872, 'shift_threshold_time': 500, 'shift_threshold_ball': 0.0005, 'success_thresh': 25, 'succ_radius_shift': 10, 'succes_switch': 1.0160872, 'thresholds': [], 'switch_episodes': [], 'curriculum_type': 'MovingThreshold'}, 'problem': {'ham_type': 'H2', 'geometry': 'H .0 .0 +.35; H .0 .0 -.35', 'taper': 1, 'mapping': 'jordan_wigner'}, 'agent': {'batch_size': 1000, 'memory_size': 20000, 'neurons': [1000, 1000, 1000, 1000, 1000], 'dropout': 0.0, 'learning_rate': 0.0003, 'angles': 0, 'en_state': 1, 'agent_type': 'DeepQNstep', 'agent_class': 'DQN_Nstep', 'n_step': 5, 'init_net': 0, 'update_target_net': 500, 'final_gamma': 0.005, 'epsilon_decay': 0.99995, 'epsilon_min': 0.05, 'epsilon_restart': 1.0}, 'non_local_opt': {'global_iters': 100, 'method': 'scipy_each_step', 'optim_alg': 'COBYLA'}}
+2025-03-12 23:52:48,753 INFO    MainThread:12429 [wandb_init.py:init():669] starting backend
+2025-03-12 23:52:48,753 INFO    MainThread:12429 [wandb_init.py:init():673] sending inform_init request
+2025-03-12 23:52:48,762 INFO    MainThread:12429 [backend.py:_multiprocessing_setup():104] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-03-12 23:52:48,763 INFO    MainThread:12429 [wandb_init.py:init():686] backend started and connected
+2025-03-12 23:52:48,780 INFO    MainThread:12429 [wandb_init.py:init():781] updated telemetry
+2025-03-12 23:52:48,863 INFO    MainThread:12429 [wandb_init.py:init():814] communicating run to backend with 90.0 second timeout
+2025-03-12 23:52:49,351 INFO    MainThread:12429 [wandb_init.py:init():867] starting run threads in backend
+2025-03-12 23:52:49,589 INFO    MainThread:12429 [wandb_run.py:_console_start():2456] atexit reg
+2025-03-12 23:52:49,590 INFO    MainThread:12429 [wandb_run.py:_redirect():2305] redirect: wrap_raw
+2025-03-12 23:52:49,590 INFO    MainThread:12429 [wandb_run.py:_redirect():2370] Wrapping output streams.
+2025-03-12 23:52:49,591 INFO    MainThread:12429 [wandb_run.py:_redirect():2395] Redirects installed.
+2025-03-12 23:52:49,593 INFO    MainThread:12429 [wandb_init.py:init():911] run started, returning control to user process

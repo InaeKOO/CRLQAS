@@ -1,0 +1,9 @@
+{"time":"2025-03-12T23:52:48.766865556+09:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-03-12T23:52:48.767093815+09:00","level":"INFO","msg":"created symlink","path":"/mnt/c/Users/ihkoo/programming/CRLQAS/jax_noisy/wandb/run-20250312_235248-2bpsb637/logs/debug-core.log"}
+{"time":"2025-03-12T23:52:48.916788119+09:00","level":"INFO","msg":"created new stream","id":"2bpsb637"}
+{"time":"2025-03-12T23:52:48.917006086+09:00","level":"INFO","msg":"stream: started","id":"2bpsb637"}
+{"time":"2025-03-12T23:52:48.917071953+09:00","level":"INFO","msg":"writer: Do: started","stream_id":"2bpsb637"}
+{"time":"2025-03-12T23:52:48.917116045+09:00","level":"INFO","msg":"sender: started","stream_id":"2bpsb637"}
+{"time":"2025-03-12T23:52:48.917139987+09:00","level":"INFO","msg":"handler: started","stream_id":"2bpsb637"}
+{"time":"2025-03-12T23:52:49.364701573+09:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-13T05:28:08.559943317+09:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)"}

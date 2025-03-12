@@ -16,7 +16,7 @@ import time
 import wandb
 
 
-
+os.environ['WANDB_DISABLED'] = "False"
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"  
 
 torch.set_num_threads(1)
@@ -274,9 +274,9 @@ if __name__ == '__main__':
     np.random.seed(args.seed)
 
     wandb.login()
-    run = wandb.init(project=wandb_project,
+    run = wandb.init(project="CRLQAS",
                     config=conf,
-                    entity=wandb_entity,
+                    entity="ihkoo711-seoul-national-university",
                     group=args.wandb_group,
                     name=args.wandb_name)
 
