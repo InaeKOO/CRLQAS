@@ -1,0 +1,10 @@
+num qubits is 4
+H2
+Traceback (most recent call last):
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/clus/main_clus.py", line 289, in <module>
+    environment = CircuitEnv(conf, device=device)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/clus/environment/environment_tc_qas.py", line 100, in __init__
+    __ham = np.load(f"mol_data/{self.problem}_{self.num_qubits}q_geom_{self.geometry}_{self.ham_mapping}.npz")
+  File "/home/inae/miniconda3/envs/CRL/lib/python3.10/site-packages/numpy/lib/npyio.py", line 405, in load
+    fid = stack.enter_context(open(os_fspath(file), "rb"))
+FileNotFoundError: [Errno 2] No such file or directory: 'mol_data/H2_4q_geom_H_.0_.0_+.35;_H_.0_.0_-.35_jordan_wigner.npz'

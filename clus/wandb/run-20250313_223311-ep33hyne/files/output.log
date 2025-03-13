@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/clus/main_clus.py", line 289, in <module>
+    environment = CircuitEnv(conf, device=device)
+  File "/mnt/c/Users/ihkoo/programming/CRLQAS/clus/environment/environment_tc_qas.py", line 50, in __init__
+    self.random_halt = int(conf['env']['rand_halt'])
+KeyError: 'env'

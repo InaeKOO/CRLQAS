@@ -1,0 +1,16 @@
+{"time":"2025-03-13T22:36:51.586962666+09:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-03-13T22:36:51.587192166+09:00","level":"INFO","msg":"created symlink","path":"/mnt/c/Users/ihkoo/programming/CRLQAS/clus/wandb/run-20250313_223651-owudi2jp/logs/debug-core.log"}
+{"time":"2025-03-13T22:36:51.732412428+09:00","level":"INFO","msg":"created new stream","id":"owudi2jp"}
+{"time":"2025-03-13T22:36:51.732639928+09:00","level":"INFO","msg":"stream: started","id":"owudi2jp"}
+{"time":"2025-03-13T22:36:51.732708828+09:00","level":"INFO","msg":"writer: Do: started","stream_id":"owudi2jp"}
+{"time":"2025-03-13T22:36:51.732740528+09:00","level":"INFO","msg":"handler: started","stream_id":"owudi2jp"}
+{"time":"2025-03-13T22:36:51.732745328+09:00","level":"INFO","msg":"sender: started","stream_id":"owudi2jp"}
+{"time":"2025-03-13T22:36:52.14082032+09:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-13T22:37:05.375464154+09:00","level":"INFO","msg":"stream: closing","id":"owudi2jp"}
+{"time":"2025-03-13T22:37:05.375494754+09:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-03-13T22:37:05.376621453+09:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-03-13T22:37:07.840159473+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-03-13T22:37:08.281158936+09:00","level":"INFO","msg":"handler: closed","stream_id":"owudi2jp"}
+{"time":"2025-03-13T22:37:08.281208636+09:00","level":"INFO","msg":"sender: closed","stream_id":"owudi2jp"}
+{"time":"2025-03-13T22:37:08.281183636+09:00","level":"INFO","msg":"writer: Close: closed","stream_id":"owudi2jp"}
+{"time":"2025-03-13T22:37:08.282095736+09:00","level":"INFO","msg":"stream: closed","id":"owudi2jp"}

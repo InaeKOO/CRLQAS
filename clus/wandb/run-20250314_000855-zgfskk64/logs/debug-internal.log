@@ -1,0 +1,16 @@
+{"time":"2025-03-14T00:08:55.503607379+09:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-03-14T00:08:55.50380988+09:00","level":"INFO","msg":"created symlink","path":"/mnt/c/Users/ihkoo/programming/CRLQAS/clus/wandb/run-20250314_000855-zgfskk64/logs/debug-core.log"}
+{"time":"2025-03-14T00:08:55.649185835+09:00","level":"INFO","msg":"created new stream","id":"zgfskk64"}
+{"time":"2025-03-14T00:08:55.649388835+09:00","level":"INFO","msg":"stream: started","id":"zgfskk64"}
+{"time":"2025-03-14T00:08:55.649425936+09:00","level":"INFO","msg":"writer: Do: started","stream_id":"zgfskk64"}
+{"time":"2025-03-14T00:08:55.649454136+09:00","level":"INFO","msg":"handler: started","stream_id":"zgfskk64"}
+{"time":"2025-03-14T00:08:55.649468836+09:00","level":"INFO","msg":"sender: started","stream_id":"zgfskk64"}
+{"time":"2025-03-14T00:08:55.998318107+09:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-14T00:08:57.484191704+09:00","level":"INFO","msg":"stream: closing","id":"zgfskk64"}
+{"time":"2025-03-14T00:08:57.484325805+09:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-03-14T00:08:57.487151519+09:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-03-14T00:08:58.521276981+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-03-14T00:08:58.779433765+09:00","level":"INFO","msg":"handler: closed","stream_id":"zgfskk64"}
+{"time":"2025-03-14T00:08:58.779454965+09:00","level":"INFO","msg":"writer: Close: closed","stream_id":"zgfskk64"}
+{"time":"2025-03-14T00:08:58.779556165+09:00","level":"INFO","msg":"sender: closed","stream_id":"zgfskk64"}
+{"time":"2025-03-14T00:08:58.781580076+09:00","level":"INFO","msg":"stream: closed","id":"zgfskk64"}

@@ -1,0 +1,84 @@
+_wandb:
+    value:
+        cli_version: 0.18.7
+        m: []
+        python_version: 3.10.16
+        t:
+            "1":
+                - 1
+                - 12
+                - 55
+            "2":
+                - 1
+                - 12
+                - 55
+            "3":
+                - 13
+                - 16
+                - 23
+                - 55
+            "4": 3.10.16
+            "5": 0.18.7
+            "8":
+                - 5
+            "12": 0.18.7
+            "13": linux-x86_64
+agent:
+    value:
+        agent_class: DQN_Nstep
+        agent_type: DeepQNstep
+        angles: 0
+        batch_size: 1000
+        dropout: 0
+        en_state: 1
+        epsilon_decay: 0.99995
+        epsilon_min: 0.05
+        epsilon_restart: 1
+        final_gamma: 0.005
+        init_net: 0
+        learning_rate: 0.0003
+        memory_size: 20000
+        n_step: 5
+        neurons:
+            - 1000
+            - 1000
+            - 1000
+            - 1000
+            - 1000
+        update_target_net: 500
+env:
+    value:
+        accept_err: 1.0160872
+        curriculum_type: MovingThreshold
+        err_mitig: 0
+        fake_min_energy: -1.99009719
+        fn_type: incremental_with_fixed_ends
+        n_shots: 0
+        noise_models: '[depolarizing, two_depolarizing]'
+        noise_values:
+            - 0.000522
+            - 0.0125
+        num_layers: 40
+        num_qubits: 4
+        rand_halt: 1
+        shift_threshold_ball: 0.0005
+        shift_threshold_time: 500
+        succ_radius_shift: 10
+        succes_switch: 1.0160872
+        success_thresh: 25
+        switch_episodes: []
+        thresholds: []
+general:
+    value:
+        episodes: 15000
+non_local_opt:
+    value:
+        global_iters: 100
+        method: scipy_each_step
+        optim_alg: COBYLA
+problem:
+    value:
+        geometry: H .0 .0 +.35; H .0 .0 -.35
+        ham_type: H2
+        mapping: jordan_wigner
+        taper: 1
