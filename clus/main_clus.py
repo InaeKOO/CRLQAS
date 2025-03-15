@@ -16,7 +16,7 @@ import time
 import wandb
 
 
-os.environ['WANDB_DISABLED'] = "False"
+os.environ['WANDB_DISABLED'] = "false"
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"  
 
 torch.set_num_threads(1)
@@ -58,7 +58,7 @@ class Saver:
 
 def modify_state(state, env):
     if conf['agent']['en_state']:
-        state = torch.cat((state, torch.tensor(env.prev_energy, dtype=torch.float, device=device).view(1)))
+        state = torch.cat((state, torch.tensor(env.prev_fidelity, dtype=torch.float, device=device).view(1)))
     if "threshold_in_state" in conf['agent'].keys() and conf['agent']["threshold_in_state"]:
         state = torch.cat((state, torch.tensor(env.done_threshold, dtype=torch.float, device=device).view(1)))
 
@@ -88,7 +88,6 @@ def agent_test(env, agent, episode_no, seed, output_path, threshold):
 
         assert type(env.error) == float
         agent.saver.stats_file['test'][episode_no]['errors'].append(env.error)
-        agent.saver.stats_file['test'][episode_no]['errors_noiseless'].append(env.error_noiseless)
         if episode_no % 200 == 0:
             agent.saver.stats_file['test'][episode_no]['time'].append(clock_time.time() - env.time)
 
@@ -96,7 +95,6 @@ def agent_test(env, agent, episode_no, seed, output_path, threshold):
             wandb.log(
                     {"test_final/episode_len": itr,
                     "test_final/errors": env.error,
-                    "test_final/errors_noiseless": env.error_noiseless,
                     "test_final/done_threshold": env.done_threshold,
                     "test_final/bond_distance": env.current_bond_distance,
                     "test_final/episode_no": episode_no,
@@ -154,14 +152,12 @@ def one_episode(episode_no, env, agent, episodes):
 
         assert type(env.error) == float
         agent.saver.stats_file['train'][episode_no]['errors'].append(env.error)
-        agent.saver.stats_file['train'][episode_no]['errors_noiseless'].append(env.error_noiseless)
         agent.saver.stats_file['train'][episode_no]['x'].append(env.x)
 
         wandb.log(
         {"train_by_step/step_no": itr,
         "train_by_step/episode_no": episode_no,
         "train_by_step/errors": env.error,
-        "train_by_step/errors_noiseless": env.error_noiseless,
         })
 
         if agent.memory_reset_switch:
@@ -177,7 +173,6 @@ def one_episode(episode_no, env, agent, episodes):
             wandb.log(
                 {"train_final/episode_len": itr,
                 "train_final/errors": env.error,
-                "train_final/errors_noiseless": env.error_noiseless,
                 "train_final/done_threshold": env.done_threshold,
                 "train_final/bond_distance": env.current_bond_distance,
                 "train_final/episode_no": episode_no,

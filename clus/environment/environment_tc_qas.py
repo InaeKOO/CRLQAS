@@ -121,7 +121,7 @@ class CircuitEnv():
 
         self.max_eig = max(eigvals)+self.energy_shift
 
-        self.curriculum_dict[self.geometry[-3:]] = curricula.__dict__[conf['env']['curriculum_type']](conf['env'], target_energy=min_eig)
+        self.curriculum_dict[self.geometry[-3:]] = curricula.__dict__[conf['env']['curriculum_type']](conf['env'], target_energy=1)
 
         self.curriculum_type = conf['env']['curriculum_type']
         self.device = device
@@ -245,7 +245,6 @@ class CircuitEnv():
             x0_flag = True
         
 
-        energy, energy_noiseless = self.get_energy(x0)
         fidelity = self.compute_fidelity(x0)
 
         if x0_flag:
@@ -263,27 +262,20 @@ class CircuitEnv():
         self.current_number_of_cnots = np.count_nonzero(cnots)
 
         
-
-        if self.noise_flag == False:
-            energy = energy_noiseless
-
-        self.energy = energy
-        
-        if energy < self.curriculum.lowest_energy and train_flag:
-            self.curriculum.lowest_energy = copy.copy(energy)
+        if fidelity > self.curriculum.highest_fidelity and train_flag:
+            self.curriculum.highest_fidelity = copy.copy(fidelity)
     
-        self.error = float(abs(self.min_eig-energy))
-        self.error_noiseless = float(abs(self.min_eig_true-energy_noiseless))
+        #self.error = float(abs(self.min_eig-energy))
+        self.error = float(1-fidelity)
 
         
         #rwd = self.reward_fn(energy)
-        rwd = self.reward_fidelity()
-        self.prev_energy = np.copy(energy)
+        rwd = self.reward_fidelity(fidelity)
         self.prev_fidelity = np.copy(fidelity)
 
-        energy_done = int(self.error < self.done_threshold)
+        fidelity_done = int(self.error < self.done_threshold)
         layers_done = self.step_counter == (self.num_layers - 1)
-        done = int(energy_done or layers_done)
+        done = int(fidelity_done or layers_done)
         
         self.previous_action = copy.deepcopy(action)
 
@@ -296,7 +288,7 @@ class CircuitEnv():
                 done = 1
      
         if done:
-            self.curriculum.update_threshold(energy_done=energy_done)
+            self.curriculum.update_threshold(energy_done=fidelity_done)
             self.done_threshold = self.curriculum.get_current_threshold()
             self.curriculum_dict[str(self.current_bond_distance)] = copy.deepcopy(self.curriculum)
         
@@ -357,7 +349,7 @@ class CircuitEnv():
                                                    jnp.array(self.hamiltonian),
                                                    self.energy_shift, self.weights,
                                                    self.noise_values, Nshots=self.n_shots)
-        self.prev_energy = self.get_energy(x0)[0]
+        self.prev_fidelity = self.compute_fidelity(x0)
 
         if self.state_with_angles:
             return state.reshape(-1).to(self.device)
@@ -424,15 +416,23 @@ class CircuitEnv():
     def compute_fidelity(self, angles = None):
 
         n = self.num_qubits
-        circuit = self.make_circuit(angles)
-        qc = QuantumCircuit(n)
-        for i in range(circuit.get_gate_count()):
-            qc.add_gate(circuit.get_gate(i))
-        U_circuit = self.circuit_to_unitary(qc, n)
-        d = U_circuit.shape[0]
+        d = 2**n
+        circuit = self.make_circuit()
+        
+        if angles is not None and circuit.get_parameter_count():
+            angle_index = 0
+            for i in range(circuit.get_parameter_count()):
+                circuit.set_parameter(angle_index,angles[angle_index])
+                angle_index += 1
+        
+        U_circuit = self.circuit_to_unitary(circuit, n)
         fidelity = jnp.abs(jnp.trace(jnp.dot(jnp.conj(self.unitary.T),U_circuit)))**2 / (d**2)
+        if circuit.get_parameter_count():   
+            #print(U_circuit)
+            print("angles: ",angles,", fidelity: ", float(fidelity))
+            pass
 
-        return fidelity
+        return float(fidelity)
 
     def circuit_to_unitary(self, circuit, n_qubits):
         d = 2 ** n_qubits
@@ -445,33 +445,32 @@ class CircuitEnv():
             unitary = unitary.at[:, i].set(state.get_vector())
         return unitary
 
-    def get_energy(self, angles = None):
-        
-        energy = vc_tc.get_exp_val(angles, self.param_circ, self.param_circ.sigma).__array__()
-
-        energy_noiseless = vc_tc.get_noiseless_exp_val(angles, self.param_circ).__array__()
-
-        return energy, energy_noiseless
 
     def adam_spsa_v2(self, angles):
 
         x0 = jnp.array(angles, dtype = jnp.float32)
 
-        ener_fn = partial(vc_tc.get_exp_val, param_circ=self.param_circ)
+        ener_fn = self.error_fidelity
 
         res = vc_h.min_spsa_v2(ener_fn, x0, maxfev = self.maxfev, **self.options)
         print(res['x'])
         return res['x']  
+    
+    def error_fidelity(self, angles=None):
+
+        return 1-self.compute_fidelity(angles)
 
     def cobyla_min(self, angles):
-
         x0 = jnp.array(angles, dtype=jnp.float32)
+        if angles.shape[0] > 0: print("Initial angles:", x0)  # Debug print
 
-        #ener_fn = partial(vc_tc.get_exp_val, param_circ=self.param_circ) #change the function to maximize fidelity
-        ener_fn = 1 - self.compute_fidelity()
+        result_cobyla = minimize(fun=self.error_fidelity, 
+                               x0=x0, 
+                               method='COBYLA', 
+                               options={'maxiter': self.global_iters,
+                                      'disp': False})  # Add display option
 
-        result_cobyla = minimize(fun=ener_fn, x0=x0, method='COBYLA', options={'maxiter': self.global_iters})
-
+        if angles.shape[0] > 0: print("Optimization result:", result_cobyla['x'])  # Debug print
         return result_cobyla['x']
 
     def adam_spsa_3(self, angles):
@@ -502,123 +501,6 @@ class CircuitEnv():
         else:
             rwd = 2*fidelity -1
         return rwd
-
-
-    def reward_fn(self, energy):
-        if self.fn_type == "staircase":
-            return (0.2 * (self.error < 15 * self.done_threshold) +
-                    0.4 * (self.error < 10 * self.done_threshold) +
-                    0.6 * (self.error < 5 * self.done_threshold) +
-                    1.0 * (self.error < self.done_threshold)) / 2.2
-        elif self.fn_type == "two_step":
-            return (0.001 * (self.error < 5 * self.done_threshold) +
-                    1.0 * (self.error < self.done_threshold))/1.001
-        elif self.fn_type == "two_step_end":
-            max_depth = self.step_counter == (self.num_layers - 1)
-            if ((self.error < self.done_threshold) or max_depth):
-                return (0.001 * (self.error < 5 * self.done_threshold) +
-                    1.0 * (self.error < self.done_threshold))/1.001
-            else:
-                return 0.0
-        elif self.fn_type == "naive":
-            return 0. + 1.*(self.error < self.done_threshold)
-        elif self.fn_type == "incremental":
-            return (self.prev_energy - energy)/abs(self.prev_energy - self.min_eig)
-        elif self.fn_type == "incremental_clipped":
-            return np.clip((self.prev_energy - energy)/abs(self.prev_energy - self.min_eig),-1,1)
-        elif self.fn_type == "nive_fives":
-            max_depth = self.step_counter == (self.num_layers - 1)
-            if (self.error < self.done_threshold):
-                rwd = 5.
-            elif max_depth:
-                rwd = -5.
-            else:
-                rwd = 0.
-            return rwd
-        
-        elif self.fn_type == "incremental_with_fixed_ends":
-            
-            max_depth = self.step_counter == (self.num_layers - 1)
-            if (self.error < self.done_threshold):
-                rwd = 5.
-            elif max_depth:
-                rwd = -5.
-            else:
-                rwd = np.clip((self.prev_energy - energy)/abs(self.prev_energy - self.min_eig),-1,1)
-            return rwd
-        
-        elif self.fn_type == "log":
-            return -np.log(1-(energy/self.min_eig))
-        
-        elif self.fn_type == "log_to_ground":
-            return -np.log(abs(energy - self.min_eig))
-        
-        elif self.fn_type == "log_to_threshold":
-            if self.error < self.done_threshold + 1e-5:
-                rwd = 11
-            else:
-                rwd = -np.log(abs(self.error - self.done_threshold))
-            return rwd
-        
-        elif self.fn_type == "log_to_threshold_bigger_1000_end":
-            if self.error < self.done_threshold + 1e-5:
-                rwd = 1000
-            else:
-                rwd = -np.log(abs(self.error - self.done_threshold))
-            return rwd
-        
-        elif self.fn_type == "log_to_threshold_bigger_end_no_repeat_actions":
-            if self.current_action == self.previous_action:
-                return -1 
-            elif self.error < self.done_threshold + 1e-5:
-                rwd = 20
-            else:
-                rwd = -np.log(abs(self.error - self.done_threshold))
-            return rwd
-        
-        elif self.fn_type == "log_neg_punish":
-            return -np.log(1-(energy/self.min_eig)) - 5
-        
-        elif self.fn_type == "end_energy":
-            max_depth = self.step_counter == (self.num_layers - 1)
-            
-            if ((self.error < self.done_threshold) or max_depth):
-                rwd = (self.max_eig - energy) / (abs(self.min_eig) + abs(self.max_eig))
-            else:
-                rwd = 0.0
-
-        elif self.fn_type == "hybrid_reward":
-            path = 'threshold_crossed.npy'
-            if os.path.exists(path):
-                
-                threshold_pass_info = np.load(path)
-                if threshold_pass_info > 8:
-                    max_depth = self.step_counter == (self.num_layers - 1)
-                    if (self.error < self.done_threshold):
-                        rwd = 5.
-                    elif max_depth:
-                        rwd = -5.
-                    else:
-                        rwd = np.clip((self.prev_energy - energy)/abs(self.prev_energy - self.min_eig),-1,1)
-                    return rwd
-                else:
-                    if self.error < self.done_threshold + 1e-5:
-                        rwd = 11
-                    else:
-                        rwd = -np.log(abs(self.error - self.done_threshold))
-                    return rwd
-            else:
-                np.save('threshold_crossed.npy', 0)
-
-        elif self.fn_type == "cnot_reduce":
-            max_depth = self.step_counter == (self.num_layers - 1)
-            if (self.error < self.done_threshold):
-                rwd = self.num_layers - self.cnot_rwd_weight*self.current_number_of_cnots
-            elif max_depth:
-                rwd = -5.
-            else:
-                rwd = np.clip((self.prev_energy - energy)/abs(self.prev_energy - self.min_eig),-1,1)
-            return 
 
         
     def illegal_action_new(self):

@@ -10,6 +10,7 @@ class MovingThreshold:
         self.current_threshold = config['accept_err']
 
         self.lowest_energy = self.min_en + self.current_threshold
+        self.highest_fidelity = 0
         self.success_counter = 0
         self.radius_shift_counter = 0
         self.call_counter = 0
@@ -19,7 +20,7 @@ class MovingThreshold:
         if self.success_thresh:
             """ Reduce amortisation radius after some amount of succeses"""
             self.success_counter += 1
-            if self.success_counter >= self.success_thresh and self.radius_shift_counter < self.succ_radius_shift and self.succes_switch > abs(self.min_en - self.lowest_energy):
+            if self.success_counter >= self.success_thresh and self.radius_shift_counter < self.succ_radius_shift and self.succes_switch > abs(1 - self.highest_fidelity):
                 self.current_threshold -= self.amortisation/self.succ_radius_shift
                 self.success_counter = 0
                 self.radius_shift_counter += 1
@@ -31,13 +32,13 @@ class MovingThreshold:
         self.call_counter += 1            
         if self.call_counter > 10 and (self.call_counter%(self.greedy_shift_time)) == 0:
             if self.amortisation:
-                self.current_threshold = abs(self.min_en - self.lowest_energy) + self.amortisation
+                self.current_threshold = abs(1 - self.highest_fidelity) + self.amortisation
 
                 if self.success_thresh:
                     self.radius_shift_counter = 0
                     self.success_counter = 0
             else:
-                self.current_threshold = abs(self.min_en - self.lowest_energy)
+                self.current_threshold = abs(1 - self.highest_fidelity)
   
         return self.current_threshold
     
