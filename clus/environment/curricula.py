@@ -3,14 +3,15 @@ class MovingThreshold:
     def __init__(self, config, **kw):
         self.amortisation = config['shift_threshold_ball'] 
         self.greedy_shift_time = config['shift_threshold_time'] 
-        self.min_en = kw.get('target_energy') 
+        self.min_en = 0
+        self.max_f = kw.get('target_fidelity')
         self.success_thresh = config["success_thresh"]
         self.succ_radius_shift = config["succ_radius_shift"]
         self.succes_switch = config["succes_switch"]
         self.current_threshold = config['accept_err']
 
         self.lowest_energy = self.min_en + self.current_threshold
-        self.highest_fidelity = 0
+        self.highest_fidelity = self.max_f - self.current_threshold
         self.success_counter = 0
         self.radius_shift_counter = 0
         self.call_counter = 0
@@ -20,7 +21,7 @@ class MovingThreshold:
         if self.success_thresh:
             """ Reduce amortisation radius after some amount of succeses"""
             self.success_counter += 1
-            if self.success_counter >= self.success_thresh and self.radius_shift_counter < self.succ_radius_shift and self.succes_switch > abs(1 - self.highest_fidelity):
+            if self.success_counter >= self.success_thresh and self.radius_shift_counter < self.succ_radius_shift and self.succes_switch > abs(self.max_f - self.highest_fidelity):
                 self.current_threshold -= self.amortisation/self.succ_radius_shift
                 self.success_counter = 0
                 self.radius_shift_counter += 1

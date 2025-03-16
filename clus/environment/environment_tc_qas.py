@@ -47,9 +47,9 @@ def random_unitary(n):
 
     Z = np.random.randn(n, n) + 1j * np.random.randn(n, n)
     Q, R = np.linalg.qr(Z)
-    diag_R = np.diag(R)
-    phase = diag_R / np.abs(diag_R)
-    Q = Q * phase
+    #diag_R = np.diag(R)
+    #phase = diag_R / np.abs(diag_R)
+    #Q = Q * phase
     return Q
 
 
@@ -121,7 +121,7 @@ class CircuitEnv():
 
         self.max_eig = max(eigvals)+self.energy_shift
 
-        self.curriculum_dict[self.geometry[-3:]] = curricula.__dict__[conf['env']['curriculum_type']](conf['env'], target_energy=1)
+        self.curriculum_dict[self.geometry[-3:]] = curricula.__dict__[conf['env']['curriculum_type']](conf['env'], target_fidelity=1)
 
         self.curriculum_type = conf['env']['curriculum_type']
         self.device = device
@@ -266,7 +266,7 @@ class CircuitEnv():
             self.curriculum.highest_fidelity = copy.copy(fidelity)
     
         #self.error = float(abs(self.min_eig-energy))
-        self.error = float(1-fidelity)
+        self.error = float(self.max_fidelity-fidelity)
 
         
         #rwd = self.reward_fn(energy)
@@ -337,6 +337,8 @@ class CircuitEnv():
 
         self.min_eig = self.fake_min_energy if self.fake_min_energy is not None else min(eigvals) + self.energy_shift
         self.max_eig = max(eigvals)+self.energy_shift
+        self.max_fidelity = 1
+        self.min_fidelity = 0
         
         state = self.state.clone()
         thetas = state[:, self.num_qubits+3:]
@@ -413,8 +415,12 @@ class CircuitEnv():
             print("Wrong gate")
             return 1
         
+    def fast_fidelity(self):
+        pass
+        
     def compute_fidelity(self, angles = None):
-
+        # tr(U'.T @ U) -> fidelity? replace H to U?
+        # U'.T @ U = I', error between I & I'?
         n = self.num_qubits
         d = 2**n
         circuit = self.make_circuit()
@@ -426,10 +432,10 @@ class CircuitEnv():
                 angle_index += 1
         
         U_circuit = self.circuit_to_unitary(circuit, n)
-        fidelity = jnp.abs(jnp.trace(jnp.dot(jnp.conj(self.unitary.T),U_circuit)))**2 / (d**2)
+        fidelity = np.abs(np.trace(np.dot(np.conj(self.unitary.T),U_circuit)))**2 / (d**2) #jnp vs np
         if circuit.get_parameter_count():   
             #print(U_circuit)
-            print("angles: ",angles,", fidelity: ", float(fidelity))
+            #print("angles: ",angles,", fidelity: ", float(fidelity))
             pass
 
         return float(fidelity)
@@ -445,6 +451,8 @@ class CircuitEnv():
             unitary = unitary.at[:, i].set(state.get_vector())
         return unitary
 
+    def sbo(self, angles):
+        pass
 
     def adam_spsa_v2(self, angles):
 
@@ -454,7 +462,7 @@ class CircuitEnv():
 
         res = vc_h.min_spsa_v2(ener_fn, x0, maxfev = self.maxfev, **self.options)
         print(res['x'])
-        return res['x']  
+        return res['x']
     
     def error_fidelity(self, angles=None):
 
