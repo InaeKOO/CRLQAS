@@ -10,6 +10,9 @@ class SM(object):
         self.optim = torch.optim.Adam(self.policy_net.parameters(), lr=learning_rate)
         self.loss = torch.nn.SmoothL1Loss()
 
+    def predict(H, theta, circuit):
+        pass
+
 def get_args(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu_id', type=int, default=0, help='Set specific GPU to run experiment [0, 1, ...]')
@@ -27,6 +30,8 @@ if __name__ == '__main__':
 
     args = get_args(sys.argv[1:])
     device = torch.device(f"cuda:{args.gpu_id}")
-
+    conf = dict()
+    agent = SM(conf)
     for epoch in range(args.epochs):
-        pass
+        pred_E = agent.predict(H, theta)
+        data_loss = mse(pred_E, true_E)
