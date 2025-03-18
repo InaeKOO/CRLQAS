@@ -23,7 +23,6 @@ class MovingThreshold:
             self.success_counter += 1
             if self.success_counter >= self.success_thresh and self.radius_shift_counter < self.succ_radius_shift and self.succes_switch > abs(self.max_f - self.highest_fidelity):
                 self.current_threshold -= self.amortisation/self.succ_radius_shift
-                #print("current_threshold: ", self.current_threshold)
                 self.success_counter = 0
                 self.radius_shift_counter += 1
         

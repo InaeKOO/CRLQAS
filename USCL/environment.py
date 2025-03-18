@@ -10,14 +10,14 @@ import timeit
 import torch
 from qulacs import QuantumCircuit
 from qulacs.gate import CNOT, RX, RY, RZ
-from utils_qas import *
+from utils import *
 from sys import stdout
 from itertools import product
 import scipy
 import scipy.linalg as la 
 import scipy.optimize as optimize
 import environment.VQE_files.VQE_tc_qas as vc_tc
-import environment.VQE_files.VQE as vc
+from qulacs import ParametricQuantumCircuit
 import os
 import numpy as np
 import random
@@ -126,6 +126,7 @@ class CircuitEnv():
         self.curriculum_type = conf['env']['curriculum_type']
         self.device = device
         self.done_threshold = conf['env']['accept_err']
+        self.f_threshold = 0.1
         
 
         stdout.flush()
@@ -271,7 +272,7 @@ class CircuitEnv():
         #rwd = self.reward_fn(energy)
         rwd = self.reward_fidelity(fidelity)
         self.prev_fidelity = np.copy(fidelity)
-        print("error: ",self.error, ", done_threshold: ", self.done_threshold)
+
         fidelity_done = int(self.error < self.done_threshold)
         layers_done = self.step_counter == (self.num_layers - 1)
         done = int(fidelity_done or layers_done)
@@ -469,7 +470,7 @@ class CircuitEnv():
 
     def cobyla_min(self, angles):
         x0 = jnp.array(angles, dtype=jnp.float32)
-        #if angles.shape[0] > 0: print("Initial angles:", x0)  # Debug print
+        if angles.shape[0] > 0: print("Initial angles:", x0)  # Debug print
 
         result_cobyla = minimize(fun=self.error_fidelity, 
                                x0=x0, 
@@ -477,7 +478,7 @@ class CircuitEnv():
                                options={'maxiter': self.global_iters,
                                       'disp': False})  # Add display option
 
-        #if angles.shape[0] > 0: print("Optimization result:", result_cobyla['x'])  # Debug print
+        if angles.shape[0] > 0: print("Optimization result:", result_cobyla['x'])  # Debug print
         return result_cobyla['x']
 
     def adam_spsa_3(self, angles):
@@ -501,7 +502,7 @@ class CircuitEnv():
         
     def reward_fidelity(self, fidelity):
         max_depth = self.step_counter == (self.num_layers - 1)
-        if (1-fidelity < self.done_threshold):
+        if (1-fidelity < self.f_threshold):
             rwd = 5.
         elif max_depth:
             rwd = -5.
