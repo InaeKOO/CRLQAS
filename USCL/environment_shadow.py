@@ -24,6 +24,7 @@ import curricula
 from functools import partial
 from scipy.optimize import minimize
 from scipy.linalg import sqrtm
+from qiskit.quantum_info import Pauli, Clifford, random_clifford, SparsePauliOp, random_density_matrix, DensityMatrix
 
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false" 
 
@@ -39,20 +40,23 @@ from typing import List, Callable, Tuple, Optional, Dict
 import copy
 
 from scipy.optimize import OptimizeResult
+from shadow import *
 
-def random_unitary(n):
 
-    Z = np.random.randn(n, n) + 1j * np.random.randn(n, n)
+def random_unitary(d):
+
+    Z = np.random.randn(d, d) + 1j * np.random.randn(d, d)
     Q, R = np.linalg.qr(Z)
     diag_R = np.diag(R)
     phase = diag_R / np.abs(diag_R)
     Q = Q * phase
-    I = np.eye(n)
-    for i in range(int(n/2),n):
-        I[i] *= -1
-    return Q
+    I = np.eye(d)
+    #for i in range(int(d/2),int(3*d/4)):
+    #    I[:, [i+int(d/4),i]] = I[:, [i,i+int(d/4)]]
+    return I
 
-def create_phi_plus(d):
+def create_phi_plus(n):
+    d = 2 **n
     phi_plus = np.zeros((d*d,), dtype=complex)
     for i in range(d):
         phi_plus[i*d + i] = 1.0
@@ -60,7 +64,7 @@ def create_phi_plus(d):
 
 def choi_state(U, n):
     d = 2 ** n
-    phi_plus = create_phi_plus(d)          # 최대 얽힘 상태 |Φ⁺⟩, shape: (d*d,)
+    phi_plus = create_phi_plus(n)          # 최대 얽힘 상태 |Φ⁺⟩, shape: (d*d,)
     rho_phi = np.outer(phi_plus, np.conjugate(phi_plus))  # |Φ⁺⟩⟨Φ⁺|, shape: (d^2, d^2)
     
     # I_d ⊗ U 적용: I_d는 d x d 항등행렬, U는 2^n x 2^n 행렬
@@ -68,7 +72,12 @@ def choi_state(U, n):
     choi = IU @ rho_phi @ IU.conjugate().T
     return choi
 
-
+def safe_matrix_sqrt(m, tol=1e-8):
+    eigenvals, eigenvecs = np.linalg.eigh(m)
+    # tol 이하의 음수 고유값은 0으로 처리
+    eigenvals = np.where(eigenvals < tol, 0, eigenvals)
+    sqrt_eigenvals = np.sqrt(eigenvals)
+    return eigenvecs @ np.diag(sqrt_eigenvals) @ eigenvecs.conj().T
 
 class CircuitEnv():
 
@@ -124,7 +133,7 @@ class CircuitEnv():
         stdout.flush()
         self.state_size = self.num_layers*self.num_qubits*(self.num_qubits+3+3)
         self.step_counter = -1
-        self.prev_fidelity = 0
+        self.prev_fidelity = None
         self.moments = [0]*self.num_qubits
         self.illegal_actions = [[]]*self.num_qubits
 
@@ -187,7 +196,9 @@ class CircuitEnv():
         
         
         self.action = action
-        #print("action: ",action)
+        print("action: ",action)
+
+        
 
         if rot_qubit < self.num_qubits:
             gate_tensor = self.moments[ rot_qubit ]
@@ -217,28 +228,10 @@ class CircuitEnv():
         angles = thetas[rot_pos]
     
         self.param_circ = ParametricQuantumCircuit(self.num_qubits)
-        
-        x0_flag = False
+                
 
-        if self.optim_method in ["SPSA"]:
-            x0 = self.adam_spsa_v2(angles)
-            x0_flag = True
-        elif self.optim_method in ["SPSA3"]:
-            x0 = self.adam_spsa_3((angles))
-            x0_flag = True
-        else:
-            x0 = self.cobyla_min(angles)
-            x0_flag = True
-        
-
-        fidelity = self.compute_fidelity(x0)
-
-        if x0_flag:
-            self.x = x0.__array__()
-        else:
-            self.x = None
-        thetas[rot_pos] = torch.tensor(x0.__array__(), dtype = torch.float)
-        
+        fidelity = self.fidelity()
+      
         for i in range(self.num_layers):
             for j in range(3):
                 next_state[i][self.num_qubits+3+j,:] = thetas[i][j,:]
@@ -256,7 +249,7 @@ class CircuitEnv():
 
         
         #rwd = self.reward_fn(energy)
-        rwd = self.reward_fidelity(fidelity, self.x)
+        rwd = self.reward_fidelity(fidelity)
         self.prev_fidelity = np.copy(fidelity)
         print("error: ",self.error,", reward: ", rwd, ", done_threshold: ", self.done_threshold)
 
@@ -271,7 +264,6 @@ class CircuitEnv():
         if self.random_halt:
             if self.step_counter == self.halting_step:
                 print(f"Last action of the episode now.")
-                print(f"Last angle is { self.x }")
                 print(f"Fidelity is {self.prev_fidelity}", flush=True)
                 done = 1
      
@@ -327,7 +319,8 @@ class CircuitEnv():
 
 
         self.param_circ = ParametricQuantumCircuit(self.num_qubits)
-        self.prev_fidelity = self.compute_fidelity(x0)
+        self.prev_fidelity = self.fidelity()
+        print("Initial fidelity: ", self.prev_fidelity)
 
         if self.state_with_angles:
             return state.reshape(-1).to(self.device)
@@ -339,7 +332,7 @@ class CircuitEnv():
     def initial_ep(self):
         print("This is before any episodes. We're not training yet.",flush=True)
 
-    def make_circuit(self, angles):
+    def make_circuit(self):
         """
         based on the angle of first rotation gate we decide if any rotation at
         a given qubit is present i.e.
@@ -348,8 +341,15 @@ class CircuitEnv():
         CNOT gate have priority over rotations when both will be present in the given slot
         """
         state = self.state.clone()
+        n = self.num_qubits
+        qs = QuantumState(n*2)
+        circuit = ParametricQuantumCircuit(n*2)
+
+        for i in range(self.num_qubits):
+            circuit.add_gate(H(i))
         
-        circuit = ParametricQuantumCircuit(self.num_qubits)
+        for i in range(self.num_qubits):
+            circuit.add_gate(CNOT(i, i+4))
         
         for i in range(self.num_layers):
             
@@ -359,7 +359,7 @@ class CircuitEnv():
             
             if len(ctrl) != 0:
                 for r in range(len(ctrl)):
-                    circuit.add_gate(CNOT(ctrl[r], targ[r]))
+                    circuit.add_gate(CNOT(n+ctrl[r], n+targ[r]))
             rot_pos = np.where(state[i][self.num_qubits: self.num_qubits+3] == 1)
             
             rot_direction_list, rot_qubit_list = rot_pos[0], rot_pos[1]
@@ -368,15 +368,16 @@ class CircuitEnv():
                 for pos, r in enumerate(rot_direction_list):
                     rot_qubit = rot_qubit_list[pos]
                     if r == 0:
-                        circuit.add_parametric_RX_gate(rot_qubit, angles[pos])
+                        circuit.add_parametric_RX_gate(n+rot_qubit, np.pi/16)
                     elif r == 1:
-                        circuit.add_parametric_RY_gate(rot_qubit, angles[pos])
+                        circuit.add_parametric_RY_gate(n+rot_qubit, np.pi/16)
                     elif r == 2:
-                        circuit.add_parametric_RZ_gate(rot_qubit, angles[pos])
+                        circuit.add_parametric_RZ_gate(n+rot_qubit, np.pi/16)
                     else:
                         print(f'rot-axis = {r} is in invalid')
                         assert r >2
-        return circuit
+        circuit.update_quantum_state(qs)
+        return qs
 
     def R_gate(self, qubit, axis, angle):
         if axis == 'X' or axis == 'x' or axis == 1:
@@ -389,61 +390,51 @@ class CircuitEnv():
             print("Wrong gate")
             return 13
 
-    def fidelity(rho, sigma):
-        sqrt_rho = sqrtm(rho)
+    def choi_fidelity(self, rho, sigma):
+        print("Is density? rho: ", is_density_matrix(rho), " , sigma: ", is_density_matrix(sigma))
+        sqrt_rho = safe_matrix_sqrt(rho)
         product = sqrt_rho @ sigma @ sqrt_rho
-        sqrt_product = sqrtm(product)
+        sqrt_product = safe_matrix_sqrt(product)
         fid = (np.trace(sqrt_product).real) ** 2  # 미세한 허수부를 제거
         return fid
-
-
-    def compute_fidelity(self, angles = None):
-        # tr(U'.T @ U) -> fidelity? replace H to U?
-        # U'.T @ U = I', error between I & I'?
-        n = self.num_qubits
-        d = 2**n
-        circuit = self.make_circuit(angles)
-        
-        U_circuit = self.circuit_to_unitary(circuit, n)
-        fidelity = 0
-        for i in range(d):
-            fidelity += (np.conj(self.unitary.T)[:,i] @ U_circuit[i,:]) / (d) #jnp vs np
-        return float(np.abs(fidelity))
-
-    def circuit_to_unitary(self, circuit, n_qubits):
-        d = 2 ** n_qubits
-        unitary = jnp.zeros((d, d), dtype=complex)
-        
-        for i in range(d):
-            state = QuantumState(n_qubits)
-            state.set_computational_basis(i)
-            circuit.update_quantum_state(state)
-            unitary = unitary.at[:, i].set(state.get_vector())
-        return unitary
     
-    def error_fidelity(self, angles=None):
+    def classical_shadow(self, num_samples = 100):
+        n = self.num_qubits * 2
+        dim = 2 ** n
+        rho_est_total = np.zeros((dim, dim), dtype=complex)
+        for _ in range(num_samples):
+            bases = [get_random_basis() for _ in range(n)]
+            qs = self.make_circuit()
+            meas_circuit = QuantumCircuit(n)
+            for qubit in range(n):
+                gate = get_measurement_gate(bases[qubit], qubit)
+                if gate is not None:
+                    meas_circuit.add_gate(gate)
+            meas_circuit.update_quantum_state(qs)
+            outcome = qs.sampling(1)[0]
+            outcome_str = format(outcome, f'0{n}b')
+            #print(outcome_str)
+            outcomes = [int(bit) for bit in outcome_str]
 
-        return 1-self.compute_fidelity(angles)
+            # For each qubit, compute its single-qubit estimator.
+            estimators = [get_single_qubit_estimator(bases[q], outcomes[q]) for q in range(n)]
+            # The snapshot estimator is the tensor product over all qubits.
+            rho_snapshot = tensor_list(estimators)
+            
+            # Accumulate the estimator.
+            rho_est_total += rho_snapshot
 
+        return rho_est_total / num_samples
+    
+    def fidelity(self, angles=None):
+        return self.choi_fidelity(choi_state(self.unitary, self.num_qubits), self.classical_shadow())
+    
 
-    def cobyla_min(self, angles):
-        x0 = jnp.array(angles, dtype=jnp.float32)
-        if angles.shape[0] > 0: print("Initial angles:", x0)  # Debug print
-
-        result_cobyla = minimize(fun=self.error_fidelity, 
-                               x0=x0, 
-                               method='COBYLA', 
-                               options={'maxiter': self.global_iters,
-                                      'disp': False})  # Add display option
-
-        if angles.shape[0] > 0: print("Optimization result:", result_cobyla['x'])  # Debug print
-        return result_cobyla['x']
-
-    def reward_fidelity(self, fidelity, angles = None):
+    def reward_fidelity(self, fidelity):
         max_depth = self.step_counter == (self.num_layers - 1)
         if (1-fidelity < self.done_threshold):
             rwd = 5.
-        elif max_depth or (angles is not None and len(angles) > 0 and angles[-1] == 0):
+        elif max_depth:
             rwd = -5.
         else:
             rwd = np.clip((fidelity-self.prev_fidelity)/abs(self.max_fidelity-self.prev_fidelity),-1,1)
